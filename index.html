@@ -1,0 +1,37 @@
+<html>
+  <head>
+    <title>p5.js Typescript Template</title>
+    <meta charset="UTF-8" />
+
+    <link
+      href="https://fonts.googleapis.com/css?family=Montserrat&display=swap"
+      rel="stylesheet"
+    />
+    <link href="./src/styles.scss" type="text/css" />
+  </head>
+
+  <body>
+    <div id="app"></div>
+
+    <div class="players">
+      <input id="player-name" placeholder="Player name" />
+      <input type="submit" id="join" value="Join" />
+      <div id="players-list" class="players__list"></div>
+    </div>
+
+    <div id="chat" class="chat">
+      <h2 id="chat-title"></h2>
+      <div class="chat__messages"></div>
+      <div class="chat__form">
+        <input
+          type="text"
+          name="message"
+          id="message"
+          placeholder="Your message!"
+        />
+        <input type="submit" id="submit" value="Send" />
+      </div>
+      <script src="src/app.ts"></script>
+    </div>
+  </body>
+</html>
