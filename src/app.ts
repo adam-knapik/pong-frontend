@@ -4,7 +4,7 @@ import "p5/lib/addons/p5.dom";
 import "./styles.scss";
 import { IPongView, Pong } from "./types";
 let game: IPongView;
-let pong = new Pong(600, 400, { id: "1" }, { id: "2" });
+//let pong = new Pong(600, 400, { id: "1" }, { id: "2" });
 
 const myMessage: HTMLInputElement = document.querySelector("#message");
 const submitBtn: HTMLInputElement = document.querySelector("#submit");
@@ -30,13 +30,12 @@ socket.on("connect", () => {
   console.log("Socket connected", socket.id);
 });
 
-socket.on("chat-message", (data) => {
-  chatMessages.innerHTML +=
-    "<span class='chat__serverMessage'>" + data + "</span>";
+socket.on("chat-message", (payload: { message: any, name: string }) => {
+  chatMessages.innerHTML += `<span class='chat__serverMessage'>${payload.message}<br/><label>${payload.name}</label></span>`;
   //console.log("new message: ", data);
 });
 
-myMessage.addEventListener("keydown", (e) => {
+myMessage.addEventListener("click", (e) => {
   //e.preventDeafult();
   e.stopPropagation();
 });
@@ -61,6 +60,10 @@ socket.on("pong.members", (members) => {
     )
     .join("");
 });
+
+socket.on("pong.cast", (g: IPongView) => {
+  game = g;
+});
 // Creating the sketch itself
 
 const sketch = (p5: P5) => {
@@ -70,10 +73,10 @@ const sketch = (p5: P5) => {
     canvas.parent("app");
     p5.background("black");
 
-    setInterval(() => {
+    /*setInterval(() => {
       pong.update();
       game = pong.show();
-    }, 15);
+    }, 15);*/
   };
 
   p5.draw = () => {
@@ -100,44 +103,10 @@ const sketch = (p5: P5) => {
   };
 
   p5.keyReleased = () => {
-    if (!pong) {
-      return;
-    }
-    const paddleLeft = pong.player("1");
-    const paddleRight = pong.player("2");
-
-    switch (p5.key) {
-      case "ArrowUp":
-      case "ArrowDown":
-        paddleRight.move(0);
-        break;
-      case "w":
-      case "s":
-        paddleLeft.move(0);
-        break;
-    }
+    socket.emit("pong.move", null);
   };
   p5.keyPressed = () => {
-    if (!pong) {
-      return;
-    }
-    const paddleLeft = pong.player("1");
-    const paddleRight = pong.player("2");
-
-    switch (p5.key) {
-      case "ArrowUp":
-        paddleRight.move(-10);
-        break;
-      case "ArrowDown":
-        paddleRight.move(10);
-        break;
-      case "w":
-        paddleLeft.move(-10);
-        break;
-      case "s":
-        paddleLeft.move(10);
-        break;
-    }
+    socket.emit("pong.move", p5.key);
   };
 };
 
